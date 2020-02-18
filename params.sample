@@ -1,0 +1,5 @@
+{
+  "ASSISTANT_APIKEY": "<add_assistant_apikey>",
+  "ASSISTANT_URL": "<add_assistant_url>",
+  "SKILL_ID": "<add_assistant_skill_id>"
+}
