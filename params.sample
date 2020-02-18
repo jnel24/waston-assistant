@@ -1,5 +1,5 @@
 {
-  "ASSISTANT_APIKEY": "<add_assistant_apikey>",
-  "ASSISTANT_URL": "<add_assistant_url>",
-  "SKILL_ID": "<add_assistant_skill_id>"
+  "ASSISTANT_APIKEY": "HUFciyT6Ch2r5myueZYgZPG6Fabjw4Kd1CiJTPiLvm0Y",
+  "ASSISTANT_URL": "https://api.us-south.assistant.watson.cloud.ibm.com/instances/5f3ef3b3-0293-47e9-9806-97f8d3e35750",
+  "SKILL_ID": "db6b383b-b8fa-4c9f-add1-b82d9b8a0ea9"
 }
