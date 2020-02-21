@@ -11,8 +11,8 @@ const alexaVerifier = require('alexa-verifier');
 // Using some globals for now
 let assistant;
 let context;
-let session_identifier;
-let session_json;
+var session_identifier;
+var json;
 
 function errorResponse(reason) {
   return {
@@ -73,10 +73,10 @@ function createSessionID()
 		.then(res => 
 		{
 			session_identifier = JSON.stringify(res.result.session_id, null, 2);
-			session_json = res;	
+			json = res;	
 			console.log(session_identifier);
-			console.log(JSON.stringify(session_json, null, 2));
-			resolve(session_json);
+			console.log(JSON.stringify(json, null, 2));
+			resolve(json);
 		})
 		.catch(err => {
 			console.log(err);
@@ -91,24 +91,24 @@ function communicateWithWatson(request, session_json)
 		console.log("Communicate with watson")
 		const input = request.intent ? request.intent.slots.everythingslot.value : 'welcome';
     	console.log('Input text: ' + input);
-		assistant.message(
-		{
-  			assistantId: '66f26318-759d-4eae-82bf-0e64534dcc4e',
-  			sessionId: session_json.result.session_id,
-  			input: 
+		assistant.message({
+			assistantId: '66f26318-759d-4eae-82bf-0e64534dcc4e',
+			sessionId: session_json.result.session_id,
+			input: 
 			{
-    			text: input
-    		}
-  		})
-  		.then(res => 
-			{
-    			console.log(JSON.stringify(res, null, 2));
-				resolve(session_json);
-  			})
-  			.catch(err => 
-			{
-    			console.log(err);
-  			});
+				text: input
+			}
+		  },
+		  function(err, watsonResponse) {
+			if (err) {
+			  console.error(err);
+			  reject(Error('Error talking to Watson.'));
+			} else {
+			  console.log('Watson result: ', watsonResponse.result);
+			  context = watsonResponse.result.context; // Update global context
+			  resolve(watsonResponse);
+			}
+		  });
 	});
 }
 
@@ -118,7 +118,7 @@ function terminateSession()
 	assistant.deleteSession(
 	{
   		assistantId: '66f26318-759d-4eae-82bf-0e64534dcc4e',
-  		sessionId: session_json.result.session_id,
+  		sessionId: json.result.session_id,
 	})
   	.then(res => 
 	{
@@ -133,14 +133,13 @@ function terminateSession()
 
 function sendResponse(response, resolve) {
 	console.log('Begin sendResponse');
-	console.log(response);
   
 	// Combine the output messages into one message.
 	var output;
 	if (typeof response.result.output !== 'undefined') {
-		output = response.result.output.text.join(' ');
+		output = response.result.output.generic[0].text;
 	} else {
-		output = response.result.toString();
+		output = response.toString();
 	}
 	
 	console.log('Output text: ' + output);
@@ -184,8 +183,8 @@ function main(args) {
 		verifyFromAlexa(args, rawBody)
 			.then(() => createAssistant())
 			.then(() => createSessionID()) 
-			.then(session_json => communicateWithWatson(request, session_json))
-			.then(session_json => sendResponse(session_json, resolve))
+			.then(() => communicateWithWatson(request, json))
+			.then(watsonResponse => sendResponse(watsonResponse, resolve))
 			.catch(err =>
 			{
 				console.log(err);
