@@ -136,7 +136,13 @@ function sendResponse(response, resolve) {
 	console.log(response);
   
 	// Combine the output messages into one message.
-	const output = response.result.output.text.join(' ');
+	var output;
+	if (typeof response.result.output !== 'undefined') {
+		output = response.result.output.text.join(' ');
+	} else {
+		output = response.result.toString();
+	}
+	
 	console.log('Output text: ' + output);
 
 	// Resolve the main promise now that we have our response
