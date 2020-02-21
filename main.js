@@ -11,6 +11,8 @@ const alexaVerifier = require('alexa-verifier');
 // Using some globals for now
 let assistant;
 let context;
+let session_identifier;
+let session_json;
 
 function errorResponse(reason) {
   return {
